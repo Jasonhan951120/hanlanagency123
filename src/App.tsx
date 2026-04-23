@@ -8,6 +8,7 @@ import { ChevronDown } from "lucide-react";
 import React, { useEffect, useState, lazy, Suspense } from "react";
 import { AnimatePresence } from "motion/react";
 const SovereignRing = lazy(() => import("./components/SovereignRing"));
+
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
@@ -320,7 +321,7 @@ export default function App() {
       <section id="proof" className="py-20 md:py-32 px-6 bg-[#050505] overflow-hidden relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 items-center">
-            <div className="lg:col-span-7 space-y-12">
+            <div className="lg:col-span-12 space-y-12">
               <div className="space-y-8">
                 <motion.span className="label-caps text-white/40" {...fadeIn}>
                   Technical Proof
@@ -366,17 +367,14 @@ export default function App() {
                 </motion.div>
               </div>
             </div>
-            <div className="lg:col-span-5 relative h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center">
-              <Suspense fallback={<div className="w-full h-full animate-pulse bg-transparent" />}>
-                <SovereignRing />
-              </Suspense>
-            </div>
+
+
           </div>
           <TypewriterText />
         </div>
       </section>
       <main className="flex-grow">
-      <section id="contact" className="pt-48 pb-10 px-6 bg-[#F5F1EB] border-t border-black/5 flex flex-col items-center min-h-[60vh]">
+      <section id="contact" className="pt-48 pb-20 px-6 bg-[#F5F1EB] border-t border-black/5 flex flex-col items-center">
         <div className="max-w-7xl mx-auto space-y-16 w-full flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
             <motion.div className="space-y-4" {...fadeIn}>
@@ -520,13 +518,15 @@ export default function App() {
               </div>
             )}
           </AnimatePresence>
+        </div>
+      </section>
 
-
-          <div className="pt-10 border-t border-black/10 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start w-full">
-
+      <footer className="py-20 px-6 bg-[#050505] border-t border-white/5 flex flex-col items-center">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start w-full">
             <div className="space-y-4">
-              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">ADDRESS</span>
-              <div className="space-y-1 font-serif text-xs sm:text-sm text-black/70 italic leading-tight break-words">
+              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase text-[#F5F1EB]">ADDRESS</span>
+              <div className="space-y-1 font-serif text-xs sm:text-sm text-[#F5F1EB]/70 italic leading-tight break-words">
                 <p>HANLAN GROUP Ltd</p>
                 <p>3RD FLOOR</p>
                 <p>45 ALBEMARLE STREET, MAYFAIR</p>
@@ -535,31 +535,29 @@ export default function App() {
               </div>
             </div>
 
-
             <div className="space-y-4">
-              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">Governance</span>
-              <div className="flex flex-col font-serif text-sm italic text-black/80">
+              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase text-[#F5F1EB]">Governance</span>
+              <div className="flex flex-col font-serif text-sm italic text-[#F5F1EB]/80">
                 <button 
                   onClick={() => setActiveModal('privacy')}
                   aria-label="View Privacy Policy"
-                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70 py-2"
+                  className="text-left underline decoration-white/10 hover:decoration-white transition-all active:opacity-70 py-2"
                 >
                   Privacy Policy
                 </button>
                 <button 
                   onClick={() => setActiveModal('terms')}
                   aria-label="View Terms of Service"
-                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70 py-2"
+                  className="text-left underline decoration-white/10 hover:decoration-white transition-all active:opacity-70 py-2"
                 >
                   Terms of Service
                 </button>
               </div>
             </div>
 
-
             <div className="space-y-2 flex flex-col items-start md:items-end">
-              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">Leadership</span>
-              <div className="space-y-0.5 flex flex-col items-start md:items-end font-serif text-xs sm:text-sm text-black/70 italic">
+              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase text-[#F5F1EB]">Leadership</span>
+              <div className="space-y-0.5 flex flex-col items-start md:items-end font-serif text-xs sm:text-sm text-[#F5F1EB]/70 italic">
                 <span className="uppercase">CEO TESS HAN</span>
                 <span className="uppercase">CTO DONGGYUN HAN</span>
                 <span className="font-sans text-[12px] uppercase tracking-[0.4em] mt-2 opacity-50 not-italic">© 2026 HANLAN GROUP</span>
@@ -567,7 +565,7 @@ export default function App() {
             </div>
           </div>
         </div>
-      </section>
+      </footer>
       </main>
 
 
