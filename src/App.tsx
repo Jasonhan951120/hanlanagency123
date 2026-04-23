@@ -169,7 +169,7 @@ export default function App() {
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Start Work
+            INITIATE CONTACT
           </motion.button>
         </motion.div>
         
@@ -200,7 +200,7 @@ export default function App() {
           >
             In an era of hyper-complexity, the ultimate authority is the refined intent. 
             We build for those who prioritize impact over noise, architecture over assembly, 
-            and sovereignty over dependency.
+            and Leadership over dependency.
           </motion.p>
         </div>
       </section>
@@ -308,7 +308,7 @@ export default function App() {
               <div className="space-y-2">
                 <h2 className="label-caps text-lg md:text-xl tracking-[0.4em] text-black italic">Hanlan Group</h2>
                 <h1 className="heading-serif text-3xl md:text-[90px] tracking-tighter leading-tight whitespace-nowrap break-keep">
-                  Connect with the <span className="text-black/80">Sovereign.</span>
+                  Connect with the <span className="text-black/80">Partnership.</span>
                 </h1>
               </div>
               <hr className="w-12 border-t-[0.5px] border-black/20 mx-auto my-8" />
@@ -321,7 +321,7 @@ export default function App() {
                   onClick={() => setIsModalOpen(true)}
                   className="px-12 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-none hover:bg-zinc-800 transition-all duration-500 ease-in-out active:opacity-70 shadow-2xl"
                 >
-                  START WORK
+                  INITIATE CONTACT
                 </button>
               </div>
             </motion.div>
@@ -422,7 +422,7 @@ export default function App() {
                             onChange={(e) => setFormValues({...formValues, reason: e.target.value})}
                             className="w-full h-10 px-4 py-2 rounded-xl border border-black/10 bg-white/50 text-black/60 text-xs focus:outline-none focus:border-black/20 transition-all appearance-none cursor-pointer"
                           >
-                            <option value="">How can we help?</option>
+                            <option value="" disabled hidden>Select Reason</option>
                             <option value="institutions">Global Access</option>
                             <option value="partnership">Technical Partnership</option>
                             <option value="investment">Strategic Investment</option>
@@ -450,7 +450,7 @@ export default function App() {
           <div className="pt-10 border-t border-black/10 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start w-full">
 
             <div className="space-y-4">
-              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">London</span>
+              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">ADDRESS</span>
               <div className="space-y-1 font-serif text-xs sm:text-sm text-black/70 italic leading-tight break-words">
                 <p>HANLAN GROUP Ltd</p>
                 <p>3RD FLOOR</p>
@@ -482,10 +482,13 @@ export default function App() {
             </div>
 
 
-            <div className="flex flex-col items-start md:items-end py-10 md:py-0 justify-end h-full">
-              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60">CEO Tess Han</span>
-              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60">CTO Donggyun Han</span>
-              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60 mt-2">© 2026 HANLAN GROUP</span>
+            <div className="space-y-2 flex flex-col items-start md:items-end">
+              <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">Leadership</span>
+              <div className="space-y-0.5 flex flex-col items-start md:items-end font-serif text-xs sm:text-sm text-black/70 italic">
+                <span>CEO Tess Han</span>
+                <span>CTO Donggyun Han</span>
+                <span className="font-sans text-[12px] uppercase tracking-[0.4em] mt-2 opacity-50 not-italic">© 2026 HANLAN GROUP</span>
+              </div>
             </div>
           </div>
         </div>
