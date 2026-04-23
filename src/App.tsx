@@ -275,9 +275,19 @@ export default function App() {
                 >
                   <span className="label-caps text-[11px] italic !tracking-[0.4em] text-white/30">Sovereign Data Infrastructure // Hanlan Group</span>
                   <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full bg-white"
+                        animate={{ opacity: [0.2, 1, 0.2] }}
+                        transition={{
+                          duration: 1.2,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    ))}
                   </div>
                 </motion.div>
               </div>
