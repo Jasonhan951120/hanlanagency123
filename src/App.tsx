@@ -14,6 +14,64 @@ const fadeIn = {
   viewport: { once: true },
   transition: { duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }
 } as const;
+function TypewriterText() {
+  const text1 = "Operating at the intersection of technology and capital";
+  const text2 = "Exploring and building across digital systems, infrastructure and emerging technologies.";
+
+  const [displayedText1, setDisplayedText1] = useState('');
+  const [displayedText2, setDisplayedText2] = useState('');
+  const [isTyping1, setIsTyping1] = useState(true);
+
+  useEffect(() => {
+    let i = 0;
+    const typing1 = setInterval(() => {
+      if (i < text1.length) {
+        setDisplayedText1(text1.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(typing1);
+        setIsTyping1(false);
+      }
+    }, 50);
+    return () => clearInterval(typing1);
+  }, []);
+
+  useEffect(() => {
+    if (!isTyping1) {
+      let i = 0;
+      const typing2 = setInterval(() => {
+        if (i < text2.length) {
+          setDisplayedText2(text2.slice(0, i + 1));
+          i++;
+        } else {
+          clearInterval(typing2);
+        }
+      }, 40);
+      return () => clearInterval(typing2);
+    }
+  }, [isTyping1]);
+
+  return (
+    <div className="flex flex-col items-center justify-center mt-20 px-4 text-center z-10 relative">
+      <p className="text-gray-300 font-mono text-sm md:text-base tracking-wide mb-3">
+        {displayedText1}
+        {isTyping1 && <span className="animate-pulse border-r-2 border-[#edc2dc] ml-1">&nbsp;</span>}
+      </p>
+      
+      {!isTyping1 && (
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-gray-400 font-mono text-[10px] md:text-sm tracking-wider md:tracking-widest max-w-2xl leading-relaxed"
+        >
+          {displayedText2}
+          <span className="animate-pulse border-r-2 border-[#edc2dc] ml-1">&nbsp;</span>
+        </motion.p>
+      )}
+    </div>
+  );
+}
+
 function GreyTypewriter({ text }: { text: string }) {
   const [visibleCount, setVisibleCount] = useState(0);
 
@@ -58,7 +116,6 @@ function GreyTypewriter({ text }: { text: string }) {
   );
 }
 export default function App() {
-  const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
 
@@ -66,14 +123,6 @@ export default function App() {
   const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '' });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
   useEffect(() => {
     if (activeModal) {
       document.body.style.overflow = 'hidden';
@@ -123,7 +172,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-[#F5F1EB]" style={{ willChange: "scroll-position" }}>
       <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
         <div className="max-w-[1400px] mx-auto flex flex-wrap justify-center md:justify-between items-center h-full gap-4">
-           <span className="font-serif text-[#1A1A1A] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] sm:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
+           <span className="font-serif text-[#1A1A1A] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
              H A N L A N &nbsp; G R O U P
            </span>
            
@@ -154,7 +203,7 @@ export default function App() {
           transition={{ duration: 1.2, ease: "easeOut" }}
           style={{ willChange: "transform, opacity" }}
         >
-          <h1 className="heading-serif text-3xl md:text-6xl lg:text-7xl mb-12 uppercase tracking-tight h-[1.3em] flex items-center justify-center text-[#1A1A1A] break-keep">
+          <h1 className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-12 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#1A1A1A] text-balance">
             <GreyTypewriter text="Systemic Precision." />
           </h1>
           <p className="text-brand-muted text-base md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed md:leading-relaxed font-light mb-12">
@@ -298,6 +347,7 @@ export default function App() {
               </Suspense>
             </div>
           </div>
+          <TypewriterText />
         </div>
       </section>
       <main className="flex-grow">
@@ -307,7 +357,7 @@ export default function App() {
             <motion.div className="space-y-4" {...fadeIn}>
               <div className="space-y-2">
                 <h2 className="label-caps text-lg md:text-xl tracking-[0.4em] text-black italic">Hanlan Group</h2>
-                <h1 className="heading-serif text-3xl md:text-[90px] tracking-tighter leading-tight whitespace-nowrap break-keep">
+                <h1 className="heading-serif text-3xl md:text-5xl lg:text-[90px] tracking-tighter leading-tight text-balance">
                   Connect with the <span className="text-black/80">Partnership.</span>
                 </h1>
               </div>
@@ -463,18 +513,18 @@ export default function App() {
 
             <div className="space-y-4">
               <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">Governance</span>
-              <div className="space-y-0.5 flex flex-col font-serif text-sm italic text-black/80">
+              <div className="flex flex-col font-serif text-sm italic text-black/80">
                 <button 
                   onClick={() => setActiveModal('privacy')}
                   aria-label="View Privacy Policy"
-                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70"
+                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70 py-2"
                 >
                   Privacy Policy
                 </button>
                 <button 
                   onClick={() => setActiveModal('terms')}
                   aria-label="View Terms of Service"
-                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70"
+                  className="text-left underline decoration-black/10 hover:decoration-black transition-all active:opacity-70 py-2"
                 >
                   Terms of Service
                 </button>

@@ -50,7 +50,12 @@ export default function SovereignRing() {
     dirLight.position.set(3, 4, 5);
     scene.add(dirLight);
     const torusGroup = new THREE.Group();
-    torusGroup.scale.set(0.6, 0.6, 0.6);
+    const updateTorusScale = () => {
+      const isMobileSize = window.innerWidth < 768;
+      const s = isMobileSize ? 0.45 : 0.6;
+      torusGroup.scale.set(s, s, s);
+    };
+    updateTorusScale();
     scene.add(torusGroup);
     function addBarycentricCoords(geo: THREE.BufferGeometry) {
       const g = geo.toNonIndexed();
@@ -266,6 +271,7 @@ export default function SovereignRing() {
       renderer.setSize(width, height);
       composer.setSize(width, height);
       fxaaPass.uniforms["resolution"].value.set(1 / width, 1 / height);
+      updateTorusScale();
     };
     window.addEventListener("resize", handleResize);
 
