@@ -163,13 +163,13 @@ export default function App() {
             next generation of consumer infrastructure for <span className="font-medium text-brand-text">global users.</span>
           </p>
           <motion.button 
-            aria-label="Contact Hanlan Group"
+            aria-label="Start Project with Hanlan Group"
             className="px-12 h-12 flex items-center justify-center border border-black/10 hover:border-black transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-semibold mx-auto active:opacity-70"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Contact Us
+            Start Work
           </motion.button>
         </motion.div>
         
@@ -181,13 +181,13 @@ export default function App() {
           <ChevronDown className="text-brand-label w-5 h-5" />
         </motion.div>
       </section>
-      <section id="doctrine" className="py-32 md:py-48 px-6 bg-[#F5F1EB]">
+      <section id="doctrine" className="pt-20 pb-32 md:pt-24 md:pb-48 px-6 bg-[#F5F1EB]">
         <div className="max-w-6xl mx-auto text-center">
           <motion.span className="label-caps mb-12 block" {...fadeIn}>
             The Ethos
           </motion.span>
           <motion.h2 
-            className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-16 max-w-5xl mx-auto"
+            className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-12 max-w-5xl mx-auto"
             {...fadeIn}
             transition={{ ...fadeIn.transition, delay: 0.2 }}
           >
@@ -311,7 +311,7 @@ export default function App() {
                   onClick={() => setIsModalOpen(true)}
                   className="px-12 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-none hover:bg-zinc-800 transition-all duration-500 ease-in-out active:opacity-70 shadow-2xl"
                 >
-                  CONTACT US
+                  START WORK
                 </button>
               </div>
             </motion.div>
@@ -427,7 +427,7 @@ export default function App() {
                         disabled={formState === 'submitting'}
                         className="w-full h-12 mt-2 rounded-xl bg-black text-white font-serif italic text-xs tracking-widest hover:bg-zinc-900 active:opacity-70 transition-all duration-300 disabled:opacity-50 shadow-xl shadow-black/10"
                       >
-                        {formState === 'submitting' ? 'TRANSMITTING...' : 'WORK WITH US'}
+                        {formState === 'submitting' ? 'TRANSMITTING...' : 'INITIATE PROJECT'}
                       </button>
                     </form>
                   )}
@@ -442,7 +442,7 @@ export default function App() {
             <div className="space-y-4">
               <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">London</span>
               <div className="space-y-1 font-serif text-xs sm:text-sm text-black/70 italic leading-tight break-words">
-                <p>HANLAN GROUP ltd</p>
+                <p>HANLAN GROUP Ltd</p>
                 <p>3RD FLOOR</p>
                 <p>45 ALBEMARLE STREET, MAYFAIR</p>
                 <p>LONDON</p>
@@ -473,7 +473,9 @@ export default function App() {
 
 
             <div className="flex flex-col items-start md:items-end py-10 md:py-0 justify-end h-full">
-              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-30">© 2026 HANLAN GROUP</span>
+              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60">CEO Tess Han</span>
+              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60">CTO Donggyun Han</span>
+              <span className="font-sans text-[12px] uppercase tracking-[0.4em] opacity-60 mt-2">© 2026 HANLAN GROUP</span>
             </div>
           </div>
         </div>
