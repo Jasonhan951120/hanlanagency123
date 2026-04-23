@@ -22,7 +22,7 @@ export default function SovereignRing() {
     scene.background = null;
 
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.z = 7;
+    camera.position.z = 5.5;
 
     const renderer = new THREE.WebGLRenderer({ 
       canvas, 
@@ -126,7 +126,7 @@ export default function SovereignRing() {
           gl_FragColor = vec4(col, 1.0); 
         }
       `,
-      side: THREE.DoubleSide, extensions: { derivatives: true },
+      side: THREE.DoubleSide, extensions: { derivatives: true } as any,
     });
     const coreTorus = new THREE.Mesh(addBarycentricCoords(new THREE.TorusGeometry(2, 0.4, 40, 40)), wireMaterial);
     torusGroup.add(coreTorus);

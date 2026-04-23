@@ -5,7 +5,7 @@
 
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState, lazy, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { AnimatePresence } from "motion/react";
 const SovereignRing = lazy(() => import("./components/SovereignRing"));
 const fadeIn = {
@@ -93,14 +93,14 @@ function GreyTypewriter({ text }: { text: string }) {
       {text.split("").map((char, i) => (
         <motion.span
           key={i}
-          initial={{ opacity: 0, color: "#F3F4F6" }}
+          initial={{ opacity: 0, color: "#EDC2DC" }}
           animate={i < visibleCount ? { 
             opacity: 1, 
-            color: ["#F3F4F6", "#E5E7EB", "#D1D5DB", "#9CA3AF", "#6B7280", "#4B5563", "#374151", "#1A1A1A"],
+            color: ["#EDC2DC", "#F5E0EE", "#FAF0F6", "#F5F1EB"],
           } : {}}
           transition={{ 
-            duration: 1.5, 
-            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1],
+            duration: 1.8, 
+            times: [0, 0.3, 0.6, 1],
             ease: "linear" 
           }}
         >
@@ -110,7 +110,7 @@ function GreyTypewriter({ text }: { text: string }) {
       <motion.span 
         animate={{ opacity: [1, 0] }} 
         transition={{ duration: 0.8, repeat: Infinity }}
-        className="ml-1 border-r-2 border-black inline-block h-[0.8em]"
+        className="ml-1 border-r-2 border-[#EDC2DC] inline-block h-[0.8em]"
       />
     </span>
   );
@@ -169,10 +169,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-[#F5F1EB]" style={{ willChange: "scroll-position" }}>
-      <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-[#000000]" style={{ willChange: "scroll-position" }}>
+       <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
         <div className="max-w-[1400px] mx-auto flex flex-wrap justify-center md:justify-between items-center h-full gap-4">
-           <span className="font-serif text-[#1A1A1A] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
+            <span className="font-serif text-[#F5F1EB] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
              H A N L A N &nbsp; G R O U P
            </span>
            
@@ -187,7 +187,7 @@ export default function App() {
                  key={link.id}
                  aria-label={`Scroll to ${link.name}`}
                  onClick={() => document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' })}
-                 className="text-sm font-medium text-black/60 hover:text-black transition-all duration-300 min-h-[44px] flex items-center active:opacity-70"
+                  className="text-sm font-medium text-[#F5F1EB]/60 hover:text-[#F5F1EB] transition-all duration-300 min-h-[44px] flex items-center active:opacity-70"
                >
                  {link.name}
                </button>
@@ -195,25 +195,32 @@ export default function App() {
            </nav>
         </div>
       </header>
-      <section className="relative h-screen flex flex-col items-center justify-center px-6 text-center overflow-x-hidden">
+       <section className="relative min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-x-hidden bg-[#000000] pt-32 pb-20">
         <motion.div 
-          className="max-w-4xl pt-24"
+          className="max-w-4xl w-full flex flex-col items-center"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
           style={{ willChange: "transform, opacity" }}
         >
-          <h1 className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-12 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#1A1A1A] text-balance">
+          <h1 className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
             <GreyTypewriter text="Systemic Precision." />
           </h1>
-          <p className="text-brand-muted text-base md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed md:leading-relaxed font-light mb-12">
+
+          <div className="w-[700px] max-w-[85%] aspect-square mx-auto mt-[-2rem] mb-6 block">
+            <Suspense fallback={null}>
+              <SovereignRing />
+            </Suspense>
+          </div>
+
+          <p className="text-[#E5E5E5] text-base md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed md:leading-relaxed font-light mb-8">
             Hanlan Group architects high-performance systems where data-driven clarity meets human intent. 
             We translate complex behavioral patterns into meaningful, actionable insights, building the 
-            next generation of consumer infrastructure for <span className="font-medium text-brand-text">global users.</span>
+            next generation of consumer infrastructure for <span className="font-medium text-white">global users.</span>
           </p>
           <motion.button 
             aria-label="Start Project with Hanlan Group"
-            className="px-12 h-12 flex items-center justify-center border border-black/10 hover:border-black transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-semibold mx-auto active:opacity-70"
+            className="px-12 h-12 flex items-center justify-center border border-white/40 hover:border-white text-white/60 hover:text-white transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-semibold mx-auto active:opacity-70 bg-transparent"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
