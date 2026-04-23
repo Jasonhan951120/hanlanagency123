@@ -72,7 +72,7 @@ function TypewriterText() {
   );
 }
 
-function GreyTypewriter({ text }: { text: string }) {
+function GreyTypewriter({ text, onComplete }: { text: string; onComplete?: () => void }) {
   const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
@@ -84,9 +84,15 @@ function GreyTypewriter({ text }: { text: string }) {
         }
         return prev + 1;
       });
-    }, 150);
+    }, 40);
     return () => clearInterval(interval);
   }, [text]);
+
+  useEffect(() => {
+    if (visibleCount >= text.length && onComplete) {
+      onComplete();
+    }
+  }, [visibleCount, text.length, onComplete]);
 
   return (
     <span>
@@ -99,7 +105,7 @@ function GreyTypewriter({ text }: { text: string }) {
             color: ["#EDC2DC", "#F5E0EE", "#FAF0F6", "#F5F1EB"],
           } : {}}
           transition={{ 
-            duration: 1.8, 
+            duration: 0.4, 
             times: [0, 0.3, 0.6, 1],
             ease: "linear" 
           }}
@@ -118,6 +124,7 @@ function GreyTypewriter({ text }: { text: string }) {
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
+  const [isHeadingComplete, setIsHeadingComplete] = useState(false);
 
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '' });
@@ -196,21 +203,32 @@ export default function App() {
         </div>
       </header>
        <section className="relative min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-x-hidden bg-[#000000] pt-32 pb-20">
-        <motion.div 
-          className="max-w-4xl w-full flex flex-col items-center"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          style={{ willChange: "transform, opacity" }}
-        >
-          <h1 className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
-            <GreyTypewriter text="Systemic Precision." />
-          </h1>
+        <div className="max-w-4xl w-full flex flex-col items-center">
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            onAnimationComplete={() => setIsHeadingComplete(true)}
+            className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance"
+          >
+            Systemic Precision.
+          </motion.h1>
 
-          <div className="w-[700px] max-w-[85%] aspect-square mx-auto mt-[-2rem] mb-6 block">
-            <Suspense fallback={null}>
-              <SovereignRing />
-            </Suspense>
+          <div className="w-[700px] max-w-[85%] h-[400px] md:h-[500px] mx-auto mt-6 mb-2 block">
+            <AnimatePresence>
+              {isHeadingComplete && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 2, ease: "easeOut" }}
+                  className="w-full h-full"
+                >
+                  <Suspense fallback={null}>
+                    <SovereignRing />
+                  </Suspense>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <p className="text-[#E5E5E5] text-base md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed md:leading-relaxed font-light mb-8">
@@ -227,7 +245,7 @@ export default function App() {
           >
             Send enquiry
           </motion.button>
-        </motion.div>
+        </div>
         
         <motion.div 
           className="absolute bottom-10"

@@ -52,7 +52,7 @@ export default function SovereignRing() {
     const torusGroup = new THREE.Group();
     const updateTorusScale = () => {
       const isMobileSize = window.innerWidth < 768;
-      const s = isMobileSize ? 0.58 : 0.6;
+      const s = isMobileSize ? 0.64 : 0.66;
       torusGroup.scale.set(s, s, s);
     };
     updateTorusScale();
@@ -233,8 +233,8 @@ export default function SovereignRing() {
       const elapsed = clock.getElapsedTime();
       const delta = elapsed - lastTime;
       lastTime = elapsed;
-      torusGroup.rotation.y += 0.002;
-      torusGroup.rotation.x += 0.0008;
+      torusGroup.rotation.y += 0.3 * delta;
+      torusGroup.rotation.x += 0.06 * delta;
 
       raycaster.setFromCamera(mouse, camera);
       const hits = raycaster.intersectObject(rcMesh);
