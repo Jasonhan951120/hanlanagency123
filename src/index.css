@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  
+  --color-brand-bg: #F5F1EB;
+  --color-brand-text: #1A1A1A;
+  --color-brand-muted: #4D4D4D;
+  --color-brand-label: #8C8C8C;
+}
+
+@layer base {
+  html, body, #root {
+    background-color: #FFFFFF !important;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    @apply text-brand-text font-sans antialiased selection:bg-black selection:text-white;
+  }
+}
+
+.heading-serif {
+  @apply font-serif font-medium tracking-tight;
+}
+
+.label-caps {
+  @apply text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-brand-label;
+}
