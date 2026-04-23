@@ -187,7 +187,7 @@ export default function App() {
                  key={link.id}
                  aria-label={`Scroll to ${link.name}`}
                  onClick={() => document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm font-medium text-[#F5F1EB]/60 hover:text-[#F5F1EB] transition-all duration-300 min-h-[44px] flex items-center active:opacity-70"
+                  className="text-sm font-medium text-[#F5F1EB] transition-all duration-300 min-h-[44px] flex items-center active:opacity-70"
                >
                  {link.name}
                </button>
@@ -225,7 +225,7 @@ export default function App() {
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Ask enquiries
+            Send enquiry
           </motion.button>
         </motion.div>
         
@@ -260,10 +260,10 @@ export default function App() {
           </motion.p>
         </div>
       </section>
-      <section id="capabilities" className="pt-12 pb-32 md:pt-20 md:pb-48 px-6">
+      <section id="capabilities" className="pt-12 pb-32 md:pt-20 md:pb-48 px-6 bg-[#F5F1EB]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-12 mb-12">
-            <motion.span className="label-caps whitespace-nowrap" {...fadeIn}>
+            <motion.span className="label-caps whitespace-nowrap text-[#1A1A1A]" {...fadeIn}>
               Core Capabilities
             </motion.span>
             <div className="h-px w-full bg-black/10" />
@@ -290,8 +290,8 @@ export default function App() {
                 {...fadeIn}
                 transition={{ ...fadeIn.transition, delay: idx * 0.2 }}
               >
-                <h3 className="heading-serif text-3xl md:text-4xl">{item.title}</h3>
-                <p className="text-brand-muted leading-relaxed font-light text-lg">
+                <h3 className="heading-serif text-3xl md:text-4xl text-[#1A1A1A]">{item.title}</h3>
+                <p className="text-[#4A4A4A] leading-relaxed font-light text-lg">
                   {item.desc}
                 </p>
               </motion.div>
@@ -365,7 +365,7 @@ export default function App() {
               <div className="space-y-2">
                 <h2 className="label-caps text-lg md:text-xl tracking-[0.4em] text-black italic">Hanlan Group</h2>
                 <h1 className="heading-serif text-3xl md:text-5xl lg:text-[90px] tracking-tighter leading-tight text-balance">
-                  Connect with <span className="text-black/80">Us.</span>
+                  Connect with <span className="text-black/80">us</span>
                 </h1>
               </div>
               <hr className="w-12 border-t-[0.5px] border-black/20 mx-auto my-8" />
@@ -378,7 +378,7 @@ export default function App() {
                   onClick={() => setIsModalOpen(true)}
                   className="px-12 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-none hover:bg-zinc-800 transition-all duration-500 ease-in-out active:opacity-70 shadow-2xl"
                 >
-                  Ask enquiries
+                  Send enquiry
                 </button>
               </div>
             </motion.div>
@@ -494,7 +494,7 @@ export default function App() {
                         disabled={formState === 'submitting'}
                         className="w-full h-12 mt-2 rounded-xl bg-black text-white font-serif italic text-xs tracking-widest hover:bg-zinc-900 active:opacity-70 transition-all duration-300 disabled:opacity-50 shadow-xl shadow-black/10"
                       >
-                        {formState === 'submitting' ? 'TRANSMITTING...' : 'INITIATE PROJECT'}
+                        {formState === 'submitting' ? 'TRANSMITTING...' : 'SEND ENQUIRY'}
                       </button>
                     </form>
                   )}
@@ -542,8 +542,8 @@ export default function App() {
             <div className="space-y-2 flex flex-col items-start md:items-end">
               <span className="label-caps !text-[12px] font-semibold tracking-[0.4em] opacity-40 uppercase">Leadership</span>
               <div className="space-y-0.5 flex flex-col items-start md:items-end font-serif text-xs sm:text-sm text-black/70 italic">
-                <span>CEO Tess Han</span>
-                <span>CTO Donggyun Han</span>
+                <span className="uppercase">CEO TESS HAN</span>
+                <span className="uppercase">CTO DONGGYUN HAN</span>
                 <span className="font-sans text-[12px] uppercase tracking-[0.4em] mt-2 opacity-50 not-italic">© 2026 HANLAN GROUP</span>
               </div>
             </div>
