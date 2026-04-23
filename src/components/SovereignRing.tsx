@@ -52,7 +52,7 @@ export default function SovereignRing() {
     const torusGroup = new THREE.Group();
     const updateTorusScale = () => {
       const isMobileSize = window.innerWidth < 768;
-      const s = isMobileSize ? 0.45 : 0.6;
+      const s = isMobileSize ? 0.58 : 0.6;
       torusGroup.scale.set(s, s, s);
     };
     updateTorusScale();

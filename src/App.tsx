@@ -218,7 +218,7 @@ export default function App() {
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            INITIATE CONTACT
+            Ask enquiries
           </motion.button>
         </motion.div>
         
@@ -358,7 +358,7 @@ export default function App() {
               <div className="space-y-2">
                 <h2 className="label-caps text-lg md:text-xl tracking-[0.4em] text-black italic">Hanlan Group</h2>
                 <h1 className="heading-serif text-3xl md:text-5xl lg:text-[90px] tracking-tighter leading-tight text-balance">
-                  Connect with the <span className="text-black/80">Partnership.</span>
+                  Connect with <span className="text-black/80">Us.</span>
                 </h1>
               </div>
               <hr className="w-12 border-t-[0.5px] border-black/20 mx-auto my-8" />
@@ -371,7 +371,7 @@ export default function App() {
                   onClick={() => setIsModalOpen(true)}
                   className="px-12 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-none hover:bg-zinc-800 transition-all duration-500 ease-in-out active:opacity-70 shadow-2xl"
                 >
-                  INITIATE CONTACT
+                  Ask enquiries
                 </button>
               </div>
             </motion.div>
