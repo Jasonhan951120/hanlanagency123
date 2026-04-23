@@ -65,8 +65,62 @@ export default function SovereignRing() {
       return g;
     }
     const wireMaterial = new THREE.ShaderMaterial({
-      vertexShader: `attribute vec3 barycentric; varying vec3 vBary; void main() { vBary = barycentric; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `varying vec3 vBary; float wireMask(vec3 b, float t) { vec3 d = fwidth(b); vec3 a = smoothstep(vec3(0.0), d * t, b); return 1.0 - min(a.x, min(a.y, a.z)); } void main() { float wf = wireMask(vBary, 1.6); vec3 col = mix(vec3(0.01, 0.01, 0.01), vec3(0.9, 0.63, 0.77), wf); col = mix(col, vec3(1.0, 1.0, 1.0) * 1.2, wf * 0.4); gl_FragColor = vec4(col, 1.0); }`,
+      vertexShader: `
+        attribute vec3 barycentric; 
+        varying vec3 vBary; 
+        varying vec3 vNormal; 
+        varying vec3 vViewPosition; 
+        void main() { 
+          vBary = barycentric; 
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vViewPosition = -mvPosition.xyz;
+          gl_Position = projectionMatrix * mvPosition; 
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vBary; 
+        varying vec3 vNormal; 
+        varying vec3 vViewPosition;
+        float wireMask(vec3 b, float t) { 
+          vec3 d = fwidth(b); 
+          vec3 a = smoothstep(vec3(0.0), d * t, b); 
+          return 1.0 - min(a.x, min(a.y, a.z)); 
+        } 
+        void main() { 
+          float wf = wireMask(vBary, 1.6); 
+          vec3 pinkCol = vec3(0.93, 0.76, 0.86);
+          vec3 bgCol = vec3(0.01, 0.01, 0.01);
+          
+          vec3 normal = normalize(vNormal);
+          vec3 viewDir = normalize(vViewPosition);
+          vec3 lightDir = normalize(vec3(3.0, 4.0, 5.0)); // Matches scene directional light
+          
+          // 1. Surface Quality: Sharp Glossiness (PBR Specular)
+          vec3 halfVector = normalize(lightDir + viewDir);
+          float NdotH = max(0.0, dot(normal, halfVector));
+          float specular = pow(NdotH, 150.0) * 1.5; 
+          
+          // 2. Premium Glow: Thin, sharp edge highlights (Fresnel)
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+          float edgeGlow = smoothstep(0.5, 1.0, fresnel) * 1.2;
+          
+          // 3. Lighting Depth: Emissive core
+          vec3 emissive = pinkCol * 0.4;
+          
+          vec3 col = mix(bgCol, pinkCol, wf);
+          if (wf > 0.0) {
+            col += emissive; // Self-illuminating depth
+            col += vec3(1.0, 0.95, 0.98) * specular; // Premium glossy reflection
+            col += vec3(1.0, 0.7, 0.85) * edgeGlow; // Sharp edge glow
+          }
+          
+          // Preserve original identity brightness
+          col = mix(col, vec3(1.0) * 1.2, wf * 0.3);
+          
+          gl_FragColor = vec4(col, 1.0); 
+        }
+      `,
       side: THREE.DoubleSide, extensions: { derivatives: true },
     });
     const coreTorus = new THREE.Mesh(addBarycentricCoords(new THREE.TorusGeometry(2, 0.4, 40, 40)), wireMaterial);
@@ -106,7 +160,17 @@ export default function SovereignRing() {
       if (!cellMap.has(k)) cellMap.set(k, { s, t: [] });
       cellMap.get(k)!.t.push(t);
     }
-    const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.05, roughness: 0.1, transmission: 1.0, ior: 1.45, thickness: 0.5, side: THREE.DoubleSide });
+    const glassMat = new THREE.MeshPhysicalMaterial({ 
+      color: 0xedc2dc, 
+      metalness: 0.4, 
+      roughness: 0.15, 
+      transmission: 0.8, 
+      ior: 1.5, 
+      thickness: 1.5, 
+      clearcoat: 1.0, 
+      clearcoatRoughness: 0.05, 
+      side: THREE.DoubleSide 
+    });
     const fragments: THREE.Mesh[] = [];
     const TWO_PI = Math.PI * 2;
     cellMap.forEach(({ s: seed, t: triList }) => {
