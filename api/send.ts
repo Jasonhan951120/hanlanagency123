@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data, error } = await resend.emails.send({
       from: 'Hanlan Group <donggyun@hanlangroup.com>',
       to: ['tess@hanlangroup.com', 'donggyun@hanlangroup.com'],
-      reply_to: email, // Directly reply to the customer's email
+      replyTo: email, // Directly reply to the customer's email
       subject: '[Inquiry] New Message from Hanlan Group Website',
       html: `
         <div style="font-family: serif; line-height: 1.6; color: #1a1a1a;">
