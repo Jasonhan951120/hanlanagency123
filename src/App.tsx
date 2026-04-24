@@ -8,6 +8,7 @@ import { ChevronDown } from "lucide-react";
 import React, { useEffect, useState, lazy, Suspense } from "react";
 import { AnimatePresence } from "motion/react";
 const SovereignRing = lazy(() => import("./components/SovereignRing"));
+const SovereignSubstrate = lazy(() => import("./components/SovereignSubstrate"));
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -181,8 +182,12 @@ export default function App() {
            </nav>
         </div>
       </header>
-       <section className="relative min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-x-hidden bg-[#000000] pt-32 pb-20">
-        <div className="max-w-4xl w-full flex flex-col items-center">
+       <section className="relative min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-hidden bg-black pt-32 pb-20">
+         <Suspense fallback={null}>
+           <SovereignSubstrate />
+         </Suspense>
+         
+         <div className="max-w-4xl w-full flex flex-col items-center relative z-10">
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,7 +217,7 @@ export default function App() {
 
           <p className="text-[#E5E5E5] text-base md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed md:leading-relaxed font-light mb-8">
             Hanlan Group architects high-performance systems where data-driven clarity meets human intent. 
-            We translate complex behavioral patterns into meaningful, actionable insights, building the 
+            We translate complex behavioural patterns into meaningful, actionable insights, building the 
             next generation of consumer infrastructure for <span className="font-medium text-white">global users.</span>
           </p>
           <motion.button 
@@ -252,7 +257,7 @@ export default function App() {
             transition={{ ...fadeIn.transition, delay: 0.4 }}
           >
             In an era of hyper-complexity, the ultimate authority is the refined intent. 
-            We build for those who prioritize impact over noise, architecture over assembly, 
+            We build for those who prioritise impact over noise, architecture over assembly, 
             and Leadership over dependency.
           </motion.p>
         </div>
@@ -318,7 +323,7 @@ export default function App() {
                   className="text-white/60 text-lg md:text-xl leading-relaxed font-light"
                   {...fadeIn}
                 >
-                  Hanlan Group is dedicated to redefining the human-tech interface. We prioritize 
+                  Hanlan Group is dedicated to redefining the human-tech interface. We prioritise 
                   systemic precision—ensuring every neural node serves a primary human benefit. 
                   This is the sovereign standard for the next generation of technological integration.
                 </motion.p>
@@ -365,7 +370,7 @@ export default function App() {
               <hr className="w-12 border-t-[0.5px] border-black/20 mx-auto my-8" />
               <div className="max-w-2xl mx-auto">
                 <p className="text-brand-muted text-base md:text-lg font-light leading-relaxed tracking-wide mb-10">
-                  For partnerships, global institutional inquiries, or technical proof audits. 
+                  For partnerships, global institutional enquiries, or technical proof audits. 
                   Our team responds to qualified queries within 24 standard business hours.
                 </p>
                 <button 
