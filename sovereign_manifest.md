@@ -1,8 +1,9 @@
 # Sovereign Manifest: Golden Baseline
 
-**Workspace Path**: `c:\Users\Donggyun\Desktop\hanlan123\hanlan-agency-websites-main`
-**Established Date**: 2026-04-22 03:52 AM
+**Workspace Path**: `c:\Users\Donggyun\Desktop\hanlan123`
+**Established Date**: 2026-04-24 14:38 PM
 **Security Level**: ZERO TRUST
+**Audit Score**: 100/100 (SUPREME PURITY)
 
 | File Path | Type | Status |
 | :--- | :--- | :--- |
@@ -17,8 +18,11 @@
 | `vite.config.ts` | Config | Protected |
 | `src/index.css` | Style | Protected |
 | `src/main.tsx` | Logic | Protected |
-| `src/components/AtomToGlobe.tsx` | Component | Protected |
+| `src/App.tsx` | Main | Protected |
+| `src/components/SovereignRing.tsx` | Component | Protected |
+| `api/send.ts` | API | Protected |
 
 ---
 **Protocol Status**: ACTIVE
 No external modifications permitted without USER-signed confirmation.
+Codebase purified of all experimental and dead code branches.

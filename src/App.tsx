@@ -73,61 +73,12 @@ function TypewriterText() {
   );
 }
 
-function GreyTypewriter({ text, onComplete }: { text: string; onComplete?: () => void }) {
-  const [visibleCount, setVisibleCount] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisibleCount((prev) => {
-        if (prev >= text.length) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 40);
-    return () => clearInterval(interval);
-  }, [text]);
-
-  useEffect(() => {
-    if (visibleCount >= text.length && onComplete) {
-      onComplete();
-    }
-  }, [visibleCount, text.length, onComplete]);
-
-  return (
-    <span>
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, color: "#EDC2DC" }}
-          animate={i < visibleCount ? { 
-            opacity: 1, 
-            color: ["#EDC2DC", "#F5E0EE", "#FAF0F6", "#F5F1EB"],
-          } : {}}
-          transition={{ 
-            duration: 0.4, 
-            times: [0, 0.3, 0.6, 1],
-            ease: "linear" 
-          }}
-        >
-          {char}
-        </motion.span>
-      ))}
-      <motion.span 
-        animate={{ opacity: [1, 0] }} 
-        transition={{ duration: 0.8, repeat: Infinity }}
-        className="ml-1 border-r-2 border-[#EDC2DC] inline-block h-[0.8em]"
-      />
-    </span>
-  );
-}
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
   const [isHeadingComplete, setIsHeadingComplete] = useState(false);
 
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '' });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
@@ -160,9 +111,36 @@ export default function App() {
     }
 
     setFormState('submitting');
-    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    setFormState('success');
+    try {
+      const response = await fetch('/api/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formValues.name,
+          email: formValues.email,
+          company: formValues.company,
+          reason: formValues.reason
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('NETWORK RESPONSE NOT OK');
+      }
+
+      setFormState('success');
+      // Auto-close after 2 seconds as requested
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setFormState('idle');
+        setFormValues({ name: '', email: '', company: '', reason: '' });
+      }, 2000);
+    } catch (error) {
+      console.error('Submission Error:', error);
+      setFormState('error');
+    }
   };
 
   const governanceContent = {
@@ -440,16 +418,29 @@ export default function App() {
                         </svg>
                       </div>
                       <p className="heading-serif text-xl text-black leading-relaxed italic">
-                        "SYSTEM ACKNOWLEDGED. YOUR INQUIRY HAS BEEN LOGGED. AN ARCHITECT WILL REVIEW."
+                        "Thank you! Your enquiry has been sent."
+                      </p>
+                    </motion.div>
+                  ) : formState === 'error' ? (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-8 py-12 text-center"
+                    >
+                      <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </div>
+                      <p className="heading-serif text-xl text-red-600 leading-relaxed italic">
+                        "Something went wrong. Please try again."
                       </p>
                       <button 
-                        onClick={() => {
-                          setIsModalOpen(false);
-                          setTimeout(() => setFormState('idle'), 500);
-                        }}
+                        onClick={() => setFormState('idle')}
                         className="text-[10px] font-black uppercase tracking-widest text-black/40 hover:text-black transition-colors"
                       >
-                        CLOSE PORTAL
+                        RETRY MISSION
                       </button>
                     </motion.div>
                   ) : (
@@ -461,8 +452,9 @@ export default function App() {
                           value={formValues.name}
                           onChange={(e) => setFormValues({...formValues, name: e.target.value})}
                           placeholder="Your name"
-                          className="w-full h-10 px-4 py-2 rounded-xl border border-black/10 bg-white/50 text-black text-xs focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20"
+                          className={`w-full h-10 px-4 py-2 rounded-xl border ${formErrors.name ? 'border-red-500' : 'border-black/10'} bg-white/50 text-black text-xs focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20`}
                         />
+                        {formErrors.name && <span className="text-[8px] text-red-500 font-bold tracking-tighter pl-1">{formErrors.name}</span>}
                       </div>
 
                       <div className="space-y-1">
@@ -472,8 +464,9 @@ export default function App() {
                           value={formValues.email}
                           onChange={(e) => setFormValues({...formValues, email: e.target.value})}
                           placeholder="your@domain.com"
-                          className="w-full h-10 px-4 py-2 rounded-xl border border-black/10 bg-white/50 text-black text-xs focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20"
+                          className={`w-full h-10 px-4 py-2 rounded-xl border ${formErrors.email ? 'border-red-500' : 'border-black/10'} bg-white/50 text-black text-xs focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20`}
                         />
+                        {formErrors.email && <span className="text-[8px] text-red-500 font-bold tracking-tighter pl-1">{formErrors.email}</span>}
                       </div>
 
                       <div className="space-y-1">
@@ -493,7 +486,7 @@ export default function App() {
                           <select 
                             value={formValues.reason}
                             onChange={(e) => setFormValues({...formValues, reason: e.target.value})}
-                            className="w-full h-10 px-4 py-2 rounded-xl border border-black/10 bg-white/50 text-black/60 text-xs focus:outline-none focus:border-black/20 transition-all appearance-none cursor-pointer"
+                            className={`w-full h-10 px-4 py-2 rounded-xl border ${formErrors.reason ? 'border-red-500' : 'border-black/10'} bg-white/50 text-black/60 text-xs focus:outline-none focus:border-black/20 transition-all appearance-none cursor-pointer`}
                           >
                             <option value="" disabled hidden>Select Reason</option>
                             <option value="institutions">Global Access</option>
@@ -503,6 +496,7 @@ export default function App() {
                           </select>
                           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/30 pointer-events-none" />
                         </div>
+                        {formErrors.reason && <span className="text-[8px] text-red-500 font-bold tracking-tighter pl-1">{formErrors.reason}</span>}
                       </div>
 
                       <button 
@@ -510,7 +504,7 @@ export default function App() {
                         disabled={formState === 'submitting'}
                         className="w-full h-12 mt-2 rounded-xl bg-black text-white font-serif italic text-xs tracking-widest hover:bg-zinc-900 active:opacity-70 transition-all duration-300 disabled:opacity-50 shadow-xl shadow-black/10"
                       >
-                        {formState === 'submitting' ? 'TRANSMITTING...' : 'SEND ENQUIRY'}
+                        {formState === 'submitting' ? 'SENDING...' : 'SEND ENQUIRY'}
                       </button>
                     </form>
                   )}
