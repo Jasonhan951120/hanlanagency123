@@ -230,10 +230,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-transparent" style={{ willChange: "scroll-position" }}>
-      <Suspense fallback={null}>
-        <SovereignGrid />
-      </Suspense>
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-[#F5F1EB]" style={{ willChange: "scroll-position" }}>
        <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
         <div className="max-w-[1400px] mx-auto flex flex-wrap justify-center md:justify-between items-center h-full gap-4">
             <span className="font-serif text-[#F5F1EB] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
@@ -259,7 +256,10 @@ export default function App() {
            </nav>
         </div>
       </header>
-       <section className="relative z-10 min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-hidden bg-transparent pt-32 pb-20">
+       <section className="relative z-0 min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-hidden bg-black pt-32 pb-20">
+         <Suspense fallback={null}>
+           <SovereignGrid />
+         </Suspense>
          
          <div className="max-w-4xl w-full flex flex-col items-center relative z-10">
           <div className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
@@ -310,7 +310,7 @@ export default function App() {
           <ChevronDown className="text-brand-label w-5 h-5" />
         </motion.div>
       </section>
-      <section id="doctrine" className="relative z-10 pt-20 pb-32 md:pt-24 md:pb-48 px-6 bg-[#F5F1EB]">
+      <section id="doctrine" className="pt-20 pb-32 md:pt-24 md:pb-48 px-6 bg-[#F5F1EB]">
         <div className="max-w-6xl mx-auto text-center">
           <motion.span className="label-caps mb-12 block" {...fadeIn}>
             The Ethos
@@ -333,7 +333,7 @@ export default function App() {
           </motion.p>
         </div>
       </section>
-      <section id="capabilities" className="relative z-10 pt-12 pb-32 md:pt-20 md:pb-48 px-6 bg-[#F5F1EB]">
+      <section id="capabilities" className="pt-12 pb-32 md:pt-20 md:pb-48 px-6 bg-[#F5F1EB]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-12 mb-12">
             <motion.span className="label-caps whitespace-nowrap text-[#1A1A1A]" {...fadeIn}>
