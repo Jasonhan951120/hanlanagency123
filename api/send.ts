@@ -17,17 +17,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { data, error } = await resend.emails.send({
       from: 'Hanlan Group <donggyun@hanlangroup.com>',
-      to: ['donggyun@hanlangroup.com', 'tess@hanlangroup.com'],
-      subject: 'New Business Enquiry from Hanlan Group Website',
+      to: ['tess@hanlangroup.com', 'donggyun@hanlangroup.com'],
+      reply_to: email, // Directly reply to the customer's email
+      subject: '[Inquiry] New Message from Hanlan Group Website',
       html: `
-        <h2>New Business Enquiry Received</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Company:</strong> ${company || 'N/A'}</p>
-        <p><strong>Reason:</strong> ${reason}</p>
-        <br/>
-        <hr/>
-        <p>This enquiry was sent via the Hanlan Group institutional platform.</p>
+        <div style="font-family: serif; line-height: 1.6; color: #1a1a1a;">
+          <h2 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">New Business Enquiry</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Company:</strong> ${company || 'N/A'}</p>
+          <p><strong>Reason:</strong> ${reason}</p>
+          <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+            This enquiry was generated via the Hanlan Group institutional platform.
+          </div>
+        </div>
       `,
     });
 

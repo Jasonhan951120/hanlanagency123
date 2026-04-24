@@ -418,7 +418,7 @@ export default function App() {
                         </svg>
                       </div>
                       <p className="heading-serif text-xl text-black leading-relaxed italic">
-                        "Thank you! Your enquiry has been sent."
+                        "Thank you for your enquiry. We will get back to you shortly."
                       </p>
                     </motion.div>
                   ) : formState === 'error' ? (
