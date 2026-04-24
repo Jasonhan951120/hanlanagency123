@@ -31,6 +31,7 @@ export default function SovereignRing() {
       powerPreference: "high-performance" 
     });
     renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
     
     // Performance Optimization: Limit pixel ratio
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -95,11 +96,10 @@ export default function SovereignRing() {
         void main() { 
           float wf = wireMask(vBary, 1.6); 
           vec3 pinkCol = vec3(0.93, 0.76, 0.86);
-          vec3 bgCol = vec3(0.01, 0.01, 0.01);
           
           vec3 normal = normalize(vNormal);
           vec3 viewDir = normalize(vViewPosition);
-          vec3 lightDir = normalize(vec3(3.0, 4.0, 5.0)); // Matches scene directional light
+          vec3 lightDir = normalize(vec3(3.0, 4.0, 5.0));
           
           // 1. Surface Quality: Sharp Glossiness (PBR Specular)
           vec3 halfVector = normalize(lightDir + viewDir);
@@ -113,17 +113,18 @@ export default function SovereignRing() {
           // 3. Lighting Depth: Emissive core
           vec3 emissive = pinkCol * 0.4;
           
-          vec3 col = mix(bgCol, pinkCol, wf);
+          vec3 col = pinkCol * wf;
           if (wf > 0.0) {
-            col += emissive; // Self-illuminating depth
-            col += vec3(1.0, 0.95, 0.98) * specular; // Premium glossy reflection
-            col += vec3(1.0, 0.7, 0.85) * edgeGlow; // Sharp edge glow
+            col += emissive;
+            col += vec3(1.0, 0.95, 0.98) * specular;
+            col += vec3(1.0, 0.7, 0.85) * edgeGlow;
           }
           
-          // Preserve original identity brightness
           col = mix(col, vec3(1.0) * 1.2, wf * 0.3);
           
-          gl_FragColor = vec4(col, 1.0); 
+          // Use wf + specular + edgeGlow as alpha to remove the black box
+          float alpha = clamp(wf + specular * 0.5 + edgeGlow * 0.5, 0.0, 1.0);
+          gl_FragColor = vec4(col, alpha); 
         }
       `,
       side: THREE.DoubleSide, extensions: { derivatives: true } as any,

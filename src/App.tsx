@@ -74,6 +74,42 @@ function TypewriterText() {
   );
 }
 
+function TypewriterHeading({ text, onComplete }: { text: string; onComplete: () => void }) {
+  const letters = text.split("");
+  return (
+    <div className="relative flex items-center justify-center min-h-[1.3em]">
+      {/* Ghost/Shadow Layer */}
+      <motion.span 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.1 }}
+        transition={{ duration: 2, ease: "easeOut" }}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none text-[#F5F1EB]"
+      >
+        {text}
+      </motion.span>
+      
+      {/* Active Typing Layer */}
+      <span className="relative flex">
+        {letters.map((char, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              duration: 0.04, 
+              delay: 0.4 + i * 0.05,
+              ease: "easeOut"
+            }}
+            onAnimationComplete={i === letters.length - 1 ? () => setTimeout(onComplete, 200) : undefined}
+          >
+            {char === " " ? "\u00A0" : char}
+          </motion.span>
+        ))}
+      </span>
+    </div>
+  );
+}
+
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
@@ -188,15 +224,12 @@ export default function App() {
          </Suspense>
          
          <div className="max-w-4xl w-full flex flex-col items-center relative z-10">
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            onAnimationComplete={() => setIsHeadingComplete(true)}
-            className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance"
-          >
-            Systemic Precision.
-          </motion.h1>
+          <div className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
+            <TypewriterHeading 
+              text="Systemic Precision." 
+              onComplete={() => setIsHeadingComplete(true)} 
+            />
+          </div>
 
           <div className="w-[700px] max-w-[85%] h-[400px] md:h-[500px] mx-auto mt-6 mb-2 block">
             <AnimatePresence>
@@ -204,7 +237,7 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 2, ease: "easeOut" }}
+                  transition={{ duration: 1.0, ease: "easeOut" }}
                   className="w-full h-full"
                 >
                   <Suspense fallback={null}>
