@@ -155,15 +155,37 @@ export default function SovereignSubstrate() {
 
     const clock = new THREE.Clock();
     let rafId: number;
+    let isPaused = false;
+
     const animate = () => {
+      if (isPaused) return;
       rafId = requestAnimationFrame(animate);
-      uniforms.uTime.value = clock.getElapsedTime();
-      // Smooth lerp for mouse for "high resistance" feel
-      uniforms.uMouse.value.x += (mouseX - uniforms.uMouse.value.x) * 0.02;
-      uniforms.uMouse.value.y += (mouseY - uniforms.uMouse.value.y) * 0.02;
+      
+      const delta = clock.getDelta();
+      // uTime precision handling: mod by 3600 to prevent precision issues over long periods
+      uniforms.uTime.value = (clock.getElapsedTime() % 3600);
+      
+      // Stable delta-based damping (framerate independent)
+      const lerpFactor = 1.0 - Math.pow(0.001, delta);
+      uniforms.uMouse.value.x += (mouseX - uniforms.uMouse.value.x) * lerpFactor;
+      uniforms.uMouse.value.y += (mouseY - uniforms.uMouse.value.y) * lerpFactor;
+      
       renderer.render(scene, camera);
     };
     animate();
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isPaused = true;
+        cancelAnimationFrame(rafId);
+      } else {
+        if (isPaused) {
+          isPaused = false;
+          animate();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const onResize = () => {
       const w = container.clientWidth;
@@ -177,6 +199,7 @@ export default function SovereignSubstrate() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       renderer.dispose();
       geo.dispose();
       mat.dispose();

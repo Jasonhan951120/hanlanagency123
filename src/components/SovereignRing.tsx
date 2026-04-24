@@ -230,10 +230,16 @@ export default function SovereignRing() {
     let reqId: number;
     const clock = new THREE.Clock();
     let lastTime = 0;
+    let isPaused = false;
+
     const tick = () => {
+      if (isPaused) return;
+      reqId = requestAnimationFrame(tick);
+      
       const elapsed = clock.getElapsedTime();
-      const delta = elapsed - lastTime;
+      const delta = Math.min(elapsed - lastTime, 0.1); // Cap delta to prevent jumps
       lastTime = elapsed;
+
       torusGroup.rotation.y += 0.3 * delta;
       torusGroup.rotation.x += 0.06 * delta;
 
@@ -246,6 +252,10 @@ export default function SovereignRing() {
         hoverActive = Math.max(hoverActive - delta * 2, 0);
       }
 
+      // Stable delta-based lerp factors
+      const upFactor = 1.0 - Math.pow(0.0001, delta); 
+      const downFactor = 1.0 - Math.pow(0.01, delta);
+
       for (const frag of fragments) {
         const { cellCenter, cellNormal, rotAxis, maxAngle } = frag.userData;
         let target = 0;
@@ -253,16 +263,33 @@ export default function SovereignRing() {
           const dist = cellCenter.distanceTo(hoverPoint);
           target = (1 - Math.min(1, Math.max(0, (dist - 0.2) / 0.8))) * hoverActive;
         }
-        frag.userData.lift = THREE.MathUtils.lerp(frag.userData.lift, target, target > frag.userData.lift ? 0.1 : 0.05);
+        
+        const factor = target > frag.userData.lift ? upFactor : downFactor;
+        frag.userData.lift = THREE.MathUtils.lerp(frag.userData.lift, target, factor);
+        
         const lift = frag.userData.lift;
         frag.position.copy(cellCenter).addScaledVector(cellNormal, 0.01 + lift * 0.25);
         frag.quaternion.setFromAxisAngle(rotAxis, lift * maxAngle);
       }
 
       composer.render();
-      reqId = requestAnimationFrame(tick);
     };
     tick();
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isPaused = true;
+        cancelAnimationFrame(reqId);
+      } else {
+        if (isPaused) {
+          isPaused = false;
+          // Reset clock to prevent large deltas after resuming
+          lastTime = clock.getElapsedTime();
+          tick();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const handleResize = () => {
       width = container.clientWidth;
@@ -279,6 +306,7 @@ export default function SovereignRing() {
     return () => {
       cancelAnimationFrame(reqId);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
       container.removeEventListener("mousemove", onMouseMove);
       renderer.dispose();
       scene.traverse((obj) => {
