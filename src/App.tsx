@@ -74,38 +74,76 @@ function TypewriterText() {
   );
 }
 
-function TypewriterHeading({ text, onComplete }: { text: string; onComplete: () => void }) {
-  const letters = text.split("");
+function ZeroShiftPathfinder({ text, onComplete }: { text: string; onComplete: () => void }) {
+  const [shadowCount, setShadowCount] = useState(0);
+  const [mainCount, setMainCount] = useState(0);
+  const fullLength = text.length;
+  
+  // Timing Config
+  const shadowSpeed = 40; // ms
+  const mainSpeed = 60;   // ms
+  
+  // Pass 1: Shadow Mapping
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setShadowCount(prev => {
+        if (prev >= fullLength) {
+          clearInterval(timer);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, shadowSpeed);
+    return () => clearInterval(timer);
+  }, [fullLength]);
+
+  // Pass 2: Main Solidification (Starts after Shadow is 100%)
+  useEffect(() => {
+    if (shadowCount < fullLength) return;
+    
+    const timer = setInterval(() => {
+      setMainCount(prev => {
+        if (prev >= fullLength) {
+          clearInterval(timer);
+          onComplete();
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, mainSpeed);
+    return () => clearInterval(timer);
+  }, [shadowCount, fullLength, onComplete]);
+
   return (
-    <div className="relative flex items-center justify-center min-h-[1.3em]">
-      {/* Ghost/Shadow Layer */}
-      <motion.span 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 2, ease: "easeOut" }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none text-[#F5F1EB]"
-      >
+    <div className="relative inline-flex items-center justify-center min-h-[1.3em]">
+      {/* Space Reservation Layer (Invisible but occupies space to prevent shifting) */}
+      <span className="invisible select-none pointer-events-none">
         {text}
-      </motion.span>
-      
-      {/* Active Typing Layer */}
-      <span className="relative flex">
-        {letters.map((char, i) => (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ 
-              duration: 0.04, 
-              delay: 0.4 + i * 0.05,
-              ease: "easeOut"
-            }}
-            onAnimationComplete={i === letters.length - 1 ? () => setTimeout(onComplete, 200) : undefined}
-          >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        ))}
+        <span className="inline-block w-[0.1em] ml-1">|</span>
       </span>
+
+      {/* Actual Animation Container */}
+      <div className="absolute inset-0 flex items-center justify-center whitespace-nowrap overflow-visible">
+        <div className="relative">
+          {/* Shadow Pass Layer */}
+          <span className="absolute left-0 top-0 text-[#4A3F4A] opacity-40 blur-[1px]">
+            {text.slice(0, shadowCount)}
+          </span>
+
+          {/* Main Pass Layer */}
+          <span className="relative text-[#F5F1EB]">
+            {text.slice(0, mainCount)}
+            {/* Persistent Blinking Caret */}
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="inline-block w-[0.1em] ml-1 text-[#F5F1EB] align-middle"
+            >
+              |
+            </motion.span>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -225,7 +263,7 @@ export default function App() {
          
          <div className="max-w-4xl w-full flex flex-col items-center relative z-10">
           <div className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
-            <TypewriterHeading 
+            <ZeroShiftPathfinder 
               text="Systemic Precision." 
               onComplete={() => setIsHeadingComplete(true)} 
             />
