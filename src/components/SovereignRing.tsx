@@ -32,8 +32,6 @@ export default function SovereignRing() {
     });
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
-    
-    // Performance Optimization: Limit pixel ratio
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
@@ -46,10 +44,12 @@ export default function SovereignRing() {
     const fxaaPass = new ShaderPass(FXAAShader);
     fxaaPass.uniforms["resolution"].value.set(1 / width, 1 / height);
     composer.addPass(fxaaPass);
+
     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
     dirLight.position.set(3, 4, 5);
     scene.add(dirLight);
+
     const torusGroup = new THREE.Group();
     const updateTorusScale = () => {
       const isMobileSize = window.innerWidth < 768;
@@ -58,6 +58,7 @@ export default function SovereignRing() {
     };
     updateTorusScale();
     scene.add(torusGroup);
+
     function addBarycentricCoords(geo: THREE.BufferGeometry) {
       const g = geo.toNonIndexed();
       const count = g.attributes.position.count;
@@ -70,67 +71,51 @@ export default function SovereignRing() {
       g.setAttribute("barycentric", new THREE.BufferAttribute(bary, 3));
       return g;
     }
+
     const wireMaterial = new THREE.ShaderMaterial({
+      uniforms: { uOpacity: { value: 0 } },
       vertexShader: `
+        varying vec3 vBary; varying vec3 vNormal; varying vec3 vViewPosition;
         attribute vec3 barycentric; 
-        varying vec3 vBary; 
-        varying vec3 vNormal; 
-        varying vec3 vViewPosition; 
         void main() { 
-          vBary = barycentric; 
-          vNormal = normalize(normalMatrix * normal);
+          vBary = barycentric; vNormal = normalize(normalMatrix * normal);
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           vViewPosition = -mvPosition.xyz;
           gl_Position = projectionMatrix * mvPosition; 
         }
       `,
       fragmentShader: `
-        varying vec3 vBary; 
-        varying vec3 vNormal; 
-        varying vec3 vViewPosition;
+        varying vec3 vBary; varying vec3 vNormal; varying vec3 vViewPosition;
+        uniform float uOpacity;
         float wireMask(vec3 b, float t) { 
-          vec3 d = fwidth(b); 
-          vec3 a = smoothstep(vec3(0.0), d * t, b); 
+          vec3 d = fwidth(b); vec3 a = smoothstep(vec3(0.0), d * t, b); 
           return 1.0 - min(a.x, min(a.y, a.z)); 
         } 
         void main() { 
-          float wf = wireMask(vBary, 1.6); 
-          vec3 pinkCol = vec3(0.93, 0.76, 0.86);
-          
-          vec3 normal = normalize(vNormal);
-          vec3 viewDir = normalize(vViewPosition);
+          float wf = wireMask(vBary, 1.6); vec3 pinkCol = vec3(0.93, 0.76, 0.86);
+          vec3 normal = normalize(vNormal); vec3 viewDir = normalize(vViewPosition);
           vec3 lightDir = normalize(vec3(3.0, 4.0, 5.0));
-          
-          // 1. Surface Quality: Sharp Glossiness (PBR Specular)
           vec3 halfVector = normalize(lightDir + viewDir);
           float NdotH = max(0.0, dot(normal, halfVector));
           float specular = pow(NdotH, 150.0) * 1.5; 
-          
-          // 2. Premium Glow: Thin, sharp edge highlights (Fresnel)
           float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
           float edgeGlow = smoothstep(0.5, 1.0, fresnel) * 1.2;
-          
-          // 3. Lighting Depth: Emissive core
           vec3 emissive = pinkCol * 0.4;
-          
           vec3 col = pinkCol * wf;
           if (wf > 0.0) {
-            col += emissive;
-            col += vec3(1.0, 0.95, 0.98) * specular;
+            col += emissive; col += vec3(1.0, 0.95, 0.98) * specular;
             col += vec3(1.0, 0.7, 0.85) * edgeGlow;
           }
-          
           col = mix(col, vec3(1.0) * 1.2, wf * 0.3);
-          
-          // Use wf + specular + edgeGlow as alpha to remove the black box
-          float alpha = clamp(wf + specular * 0.5 + edgeGlow * 0.5, 0.0, 1.0);
+          float alpha = clamp(wf + specular * 0.5 + edgeGlow * 0.5, 0.0, 1.0) * uOpacity;
           gl_FragColor = vec4(col, alpha); 
         }
       `,
-      side: THREE.DoubleSide, extensions: { derivatives: true } as any,
+      side: THREE.DoubleSide, transparent: true, extensions: { derivatives: true } as any,
     });
     const coreTorus = new THREE.Mesh(addBarycentricCoords(new THREE.TorusGeometry(2, 0.4, 40, 40)), wireMaterial);
     torusGroup.add(coreTorus);
+
     const FRAG_SCALE = 24; const TORUS_R = 2, TORUS_r = 0.4;
     function hash2(px: number, py: number) {
       const a = Math.sin(px * 127.1 + py * 311.7) * 43758.5453;
@@ -166,17 +151,13 @@ export default function SovereignRing() {
       if (!cellMap.has(k)) cellMap.set(k, { s, t: [] });
       cellMap.get(k)!.t.push(t);
     }
+
     const glassMat = new THREE.MeshPhysicalMaterial({ 
-      color: 0xedc2dc, 
-      metalness: 0.4, 
-      roughness: 0.15, 
-      transmission: 0.8, 
-      ior: 1.5, 
-      thickness: 1.5, 
-      clearcoat: 1.0, 
-      clearcoatRoughness: 0.05, 
-      side: THREE.DoubleSide 
+      color: 0xedc2dc, metalness: 0.4, roughness: 0.15, transmission: 0.8, 
+      ior: 1.5, thickness: 1.5, clearcoat: 1.0, clearcoatRoughness: 0.05, 
+      side: THREE.DoubleSide, transparent: true, opacity: 0
     });
+
     const fragments: THREE.Mesh[] = [];
     const TWO_PI = Math.PI * 2;
     cellMap.forEach(({ s: seed, t: triList }) => {
@@ -209,12 +190,20 @@ export default function SovereignRing() {
       const rnd = hash2(seed[0] * 137.5, seed[1] * 137.5);
       const rotAxis = new THREE.Vector3(rnd[0] - 0.5, rnd[1] - 0.5, Math.random() - 0.5).normalize();
       const mesh = new THREE.Mesh(geo, glassMat);
-      mesh.position.copy(cellCenter).addScaledVector(cellNormal, 0.01);
-      mesh.userData = { cellCenter, cellNormal, rotAxis, maxAngle: 0.6 + rnd[1] * 0.6, lift: 0 };
+      
+      mesh.position.copy(cellCenter).addScaledVector(cellNormal, 1.5 + rnd[0] * 2);
+      mesh.visible = false;
+      
+      mesh.userData = { 
+        cellCenter, cellNormal, rotAxis, maxAngle: 0.6 + rnd[1] * 0.6, lift: 0,
+        introDelay: 2.0 + (seed[0] + seed[1]) * 1.5,
+        introProgress: 0
+      };
       torusGroup.add(mesh);
       fragments.push(mesh);
     });
     nonIndexed.dispose();
+
     const rcMesh = new THREE.Mesh(new THREE.TorusGeometry(TORUS_R, TORUS_r, 60, 60), new THREE.MeshBasicMaterial({ visible: false }));
     torusGroup.add(rcMesh);
     const raycaster = new THREE.Raycaster();
@@ -227,22 +216,33 @@ export default function SovereignRing() {
       mouse.y = -((e.clientY - rect.top) / height) * 2 + 1;
     };
     container.addEventListener("mousemove", onMouseMove);
+    
     let reqId: number;
     const clock = new THREE.Clock();
     let lastTime = 0;
     let isPaused = false;
-
+ 
     const tick = () => {
       if (isPaused) return;
       reqId = requestAnimationFrame(tick);
       
       const elapsed = clock.getElapsedTime();
-      const delta = Math.min(elapsed - lastTime, 0.1); // Cap delta to prevent jumps
+      const delta = Math.min(elapsed - lastTime, 0.1); 
       lastTime = elapsed;
+ 
+      if (elapsed < 2.0) {
+        wireMaterial.uniforms.uOpacity.value = Math.min(elapsed / 2.0, 1.0);
+      } else {
+        wireMaterial.uniforms.uOpacity.value = 1.0;
+      }
+
+      if (elapsed > 2.0) {
+        glassMat.opacity = Math.min((elapsed - 2.0) / 1.5, 1.0);
+      }
 
       torusGroup.rotation.y += 0.3 * delta;
       torusGroup.rotation.x += 0.06 * delta;
-
+ 
       raycaster.setFromCamera(mouse, camera);
       const hits = raycaster.intersectObject(rcMesh);
       if (hits.length > 0) {
@@ -251,15 +251,24 @@ export default function SovereignRing() {
       } else {
         hoverActive = Math.max(hoverActive - delta * 2, 0);
       }
-
-      // Stable delta-based lerp factors
+ 
       const upFactor = 1.0 - Math.pow(0.0001, delta); 
       const downFactor = 1.0 - Math.pow(0.01, delta);
+      const introFactor = 1.0 - Math.pow(0.01, delta);
 
       for (const frag of fragments) {
-        const { cellCenter, cellNormal, rotAxis, maxAngle } = frag.userData;
+        const { cellCenter, cellNormal, rotAxis, maxAngle, introDelay } = frag.userData;
+        
+        if (elapsed > introDelay) {
+          frag.visible = true;
+          frag.userData.introProgress = THREE.MathUtils.lerp(frag.userData.introProgress, 1, introFactor);
+        }
+        
+        const ip = frag.userData.introProgress;
+        const invIp = 1.0 - ip;
+
         let target = 0;
-        if (hoverActive > 0.01) {
+        if (hoverActive > 0.01 && ip > 0.95) {
           const dist = cellCenter.distanceTo(hoverPoint);
           target = (1 - Math.min(1, Math.max(0, (dist - 0.2) / 0.8))) * hoverActive;
         }
@@ -268,14 +277,16 @@ export default function SovereignRing() {
         frag.userData.lift = THREE.MathUtils.lerp(frag.userData.lift, target, factor);
         
         const lift = frag.userData.lift;
-        frag.position.copy(cellCenter).addScaledVector(cellNormal, 0.01 + lift * 0.25);
-        frag.quaternion.setFromAxisAngle(rotAxis, lift * maxAngle);
+        const assemblyOffset = invIp * 2.5; 
+        frag.position.copy(cellCenter).addScaledVector(cellNormal, 0.01 + lift * 0.25 + assemblyOffset);
+        frag.quaternion.setFromAxisAngle(rotAxis, (lift * maxAngle) + (invIp * Math.PI));
+        frag.scale.setScalar(0.5 + ip * 0.5);
       }
-
+ 
       composer.render();
     };
     tick();
-
+ 
     const handleVisibilityChange = () => {
       if (document.hidden) {
         isPaused = true;
@@ -283,14 +294,13 @@ export default function SovereignRing() {
       } else {
         if (isPaused) {
           isPaused = false;
-          // Reset clock to prevent large deltas after resuming
           lastTime = clock.getElapsedTime();
           tick();
         }
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
+ 
     const handleResize = () => {
       width = container.clientWidth;
       height = container.clientHeight;
@@ -302,7 +312,7 @@ export default function SovereignRing() {
       updateTorusScale();
     };
     window.addEventListener("resize", handleResize);
-
+ 
     return () => {
       cancelAnimationFrame(reqId);
       window.removeEventListener("resize", handleResize);
@@ -319,7 +329,7 @@ export default function SovereignRing() {
       scene.clear();
     };
   }, []);
-
+ 
   return (
     <div ref={containerRef} className="w-full h-full relative bg-transparent pointer-events-auto">
       <canvas ref={canvasRef} className="w-full h-full block" />
