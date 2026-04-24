@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Hanlan Group Inquiry <onboarding@resend.dev>',
+      from: 'Hanlan Group <donggyun@hanlangroup.com>',
       to: ['donggyun@hanlangroup.com', 'tess@hanlangroup.com'],
       subject: 'New Business Enquiry from Hanlan Group Website',
       html: `
