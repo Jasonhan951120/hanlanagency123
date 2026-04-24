@@ -9,9 +9,8 @@ varying float vHeight;
 varying float vMouseDist;
 
 float getWave(vec2 p, float t) {
-    float wave = sin(p.x * 1.5 + t * 0.5) * cos(p.y * 1.2 + t * 0.3);
-    wave += sin(p.y * 2.5 - t * 0.8) * 0.25;
-    wave += cos(length(p) * 1.8 - t * 0.4) * 0.15;
+    float wave = sin(p.x * 0.8 + t * 0.3) * cos(p.y * 0.6 + t * 0.2);
+    wave += sin(p.y * 1.5 - t * 0.4) * 0.15;
     return wave * 0.5;
 }
 
@@ -19,15 +18,19 @@ void main() {
     vUv = uv;
     vec3 pos = position;
     
-    // 1. Base Topographical Wave
+    // 1. Mouse Interaction (Strong Magnetic Pull)
+    vMouseDist = length(pos.xy - uMouse);
+    float mouseStrength = exp(-vMouseDist * 0.8); // Wider radius for better visibility
+    
+    // Magnetic Attraction: Points aggressively follow/clump toward cursor
+    // Increased to 0.55 for high-visibility follow effect
+    pos.xy += (uMouse - pos.xy) * mouseStrength * 0.55;
+    
+    // 2. Wave Motion
     float wave = getWave(pos.xy, uTime);
     
-    // 2. Stronger Mouse Interaction (Gravitational Pull)
-    float distToMouse = length(pos.xy - uMouse);
-    vMouseDist = distToMouse;
-    
-    float mousePull = 0.4 * exp(-distToMouse * 1.8);
-    pos.z += wave + mousePull; // Bends "towards" viewer near mouse
+    // 3. Displacement
+    pos.z += wave + (1.0 * mouseStrength);
     vHeight = pos.z;
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
@@ -41,46 +44,40 @@ varying vec2 vUv;
 varying float vHeight;
 varying float vMouseDist;
 
+float random(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
 void main() {
-    // 1. High Density Grid
-    float gridScale = 48.0;
-    vec2 gridUV = fract(vUv * gridScale - 0.5);
-    vec2 gridLines = smoothstep(0.485, 0.5, abs(gridUV - 0.5));
-    float lineMask = max(gridLines.x, gridLines.y);
+    // 1. Particle Starfield (User request: very small dots)
+    float gridScale = 144.0; 
+    vec2 gridUV = fract(vUv * gridScale);
     
-    // 2. Smaller Intersection Dots
-    vec2 dotUV = fract(vUv * gridScale);
-    float distToCenter = length(dotUV - 0.5);
-    float dots = smoothstep(0.1, 0.03, distToCenter);
+    float dist = length(gridUV - 0.5);
+    float stars = smoothstep(0.12, 0.02, dist);
     
-    // 3. Colors (Pure White)
-    vec3 whiteCol = vec3(1.0, 1.0, 1.0);
-    vec3 deepBg = vec3(0.0, 0.0, 0.0); 
+    // 2. Twinkle & Glow Logic
+    float mousePresence = exp(-vMouseDist * 1.5);
     
-    // Pulse effect
-    float pulse = (sin(uTime * 2.0 + vHeight * 6.0) * 0.5 + 0.5) * 0.3 + 0.7;
+    vec2 cellID = floor(vUv * gridScale);
+    float twinkleSeed = random(cellID);
+    float twinkle = (sin(uTime * 3.5 + twinkleSeed * 12.0) * 0.5 + 0.5) * 0.5 + 0.5;
     
-    // 4. Mouse Reactive Brightness
-    float sensing = exp(-vMouseDist * 3.5) * 1.5;
+    // 3. Colors (Hanlan Pink #EDC2DC)
+    vec3 pink = vec3(0.93, 0.76, 0.86); 
+    vec3 white = vec3(1.0, 1.0, 1.0);
     
-    // Composite
-    // Subtle lines
-    vec3 color = mix(deepBg, whiteCol, lineMask * 0.18); 
+    vec3 finalColor = mix(pink, white, (mousePresence * 0.6 + (twinkle - 0.5) * 0.4));
     
-    // Stronger, reactive glowing dots
-    float dotBrightness = (3.5 + sensing * 2.5);
-    color = mix(color, whiteCol * dotBrightness, dots * pulse);
+    // 4. Composition (User request: shining like stars)
+    float brightness = (8.0 + mousePresence * 12.0) * twinkle;
+    vec3 color = finalColor * brightness;
     
-    // Atmospheric effects
-    float atmosphericFade = smoothstep(-0.8, 1.0, vHeight);
-    color *= (0.4 + atmosphericFade * 0.6);
+    // 5. Global Visibility & Vignette
+    float vignette = 1.0 - smoothstep(0.15, 1.05, length(vUv - 0.5));
+    float alpha = stars * brightness * 0.18 * vignette;
     
-    // Dynamic Alpha
-    float alpha = (lineMask * 0.12 + dots * pulse * 0.9);
-    
-    // Edge Vignette
-    float vignette = 1.0 - smoothstep(0.15, 0.95, length(vUv - 0.5));
-    alpha *= vignette;
+    alpha = clamp(alpha, 0.0, 0.98);
 
     gl_FragColor = vec4(color, alpha);
 }
@@ -94,10 +91,9 @@ export default function SovereignGrid() {
     const container = containerRef.current;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
     
-    // Refined angle for depth
-    camera.position.set(0, -4.5, 4.5); 
+    camera.position.set(0, -4.8, 4.2); 
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -109,7 +105,7 @@ export default function SovereignGrid() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
-    const geo = new THREE.PlaneGeometry(16, 16, 144, 144);
+    const geo = new THREE.PlaneGeometry(16, 16, 180, 180);
     const uniforms = {
       uTime: { value: 0 },
       uMouse: { value: new THREE.Vector2(-99, -99) }
@@ -130,7 +126,6 @@ export default function SovereignGrid() {
 
     let targetMouseX = -99, targetMouseY = -99;
     const onMouseMove = (e: MouseEvent) => {
-      // Mapping mouse to -8 to 8 space
       targetMouseX = (e.clientX / window.innerWidth - 0.5) * 16;
       targetMouseY = (0.5 - e.clientY / window.innerHeight) * 16;
     };
@@ -146,8 +141,8 @@ export default function SovereignGrid() {
       uniforms.uTime.value = clock.getElapsedTime();
       
       const delta = clock.getDelta();
-      // Faster, smoother lerp for high-density interaction
-      const lerpFactor = 1.0 - Math.pow(0.005, delta);
+      // More viscous lerp (0.02) to make the "pulling" effect visible as it follows
+      const lerpFactor = 1.0 - Math.pow(0.02, delta);
       uniforms.uMouse.value.x += (targetMouseX - uniforms.uMouse.value.x) * lerpFactor;
       uniforms.uMouse.value.y += (targetMouseY - uniforms.uMouse.value.y) * lerpFactor;
       
@@ -192,7 +187,7 @@ export default function SovereignGrid() {
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 z-[0] pointer-events-none w-full h-full bg-[#000000]" 
+      className="absolute inset-0 z-[0] pointer-events-none w-full h-full bg-transparent" 
       style={{ willChange: "transform" }}
     />
   );
