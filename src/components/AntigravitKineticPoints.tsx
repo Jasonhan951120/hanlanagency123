@@ -180,17 +180,35 @@ export default function AntigravitKineticPoints() {
       };
     };
 
+    const handleMouseDown = () => {
+      const mouse = mouseRef.current;
+      const points = pointsRef.current;
+      
+      points.forEach(p => {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        
+        // Explosive burst force
+        const force = 50 + Math.random() * 30; 
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
+      });
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
 
     return () => {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
       cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-transparent">
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-transparent cursor-pointer">
       <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );
