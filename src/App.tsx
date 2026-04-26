@@ -119,11 +119,11 @@ function ZeroShiftPathfinder({ text, onComplete }: { text: string; onComplete: (
       {/* Space Reservation Layer (Invisible but occupies space to prevent shifting) */}
       <span className="invisible select-none pointer-events-none">
         {text}
-        <span className="inline-block w-[0.1em] ml-1">|</span>
+        <span className="inline-block w-[2px] h-[0.72em] ml-2 bg-[#F5F1EB] translate-y-[-0.01em]" />
       </span>
 
       {/* Actual Animation Container */}
-      <div className="absolute inset-0 flex items-center justify-center whitespace-nowrap overflow-visible">
+      <div className="absolute inset-0 flex items-center justify-start whitespace-nowrap overflow-visible">
         <div className="relative">
           {/* Shadow Pass Layer */}
           <span className="absolute left-0 top-0 text-[#4A3F4A] opacity-40 blur-[1px]">
@@ -137,10 +137,8 @@ function ZeroShiftPathfinder({ text, onComplete }: { text: string; onComplete: (
             <motion.span
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="inline-block w-[0.1em] ml-1 text-[#F5F1EB] align-middle"
-            >
-              |
-            </motion.span>
+              className="inline-block w-[2px] h-[0.72em] ml-2 bg-[#F5F1EB] translate-y-[-0.01em]"
+            />
           </span>
         </div>
       </div>
