@@ -132,21 +132,19 @@ export default function SovereignGrid() {
     };
 
     let frames = 0;
+    let rafId: number;
     const animate = () => {
       frames++;
       ctx.clearRect(0, 0, w, h);
       
-      // Deep Black Substrate
       ctx.fillStyle = "#050506";
       ctx.fillRect(0, 0, w, h);
 
-      // Render Flux Field
       filaments.forEach(f => {
         f.updateSignals();
         f.draw(frames);
       });
 
-      // High-Impact Cinematic Vignette
       const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, w * 0.75);
       grad.addColorStop(0, "rgba(0,0,0,0)");
       grad.addColorStop(0.5, "rgba(0,0,0,0.1)");
@@ -154,7 +152,7 @@ export default function SovereignGrid() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -168,6 +166,7 @@ export default function SovereignGrid() {
     animate();
 
     return () => {
+      cancelAnimationFrame(rafId);
       window.removeEventListener("resize", init);
       window.removeEventListener("mousemove", handleMouseMove);
     };

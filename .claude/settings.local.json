@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *2)",
+      "Bash(npx tsc *)",
+      "Bash(git checkout *)"
+    ]
+  }
+}

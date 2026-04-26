@@ -148,6 +148,8 @@ function ZeroShiftPathfinder({ text, onComplete }: { text: string; onComplete: (
   );
 }
 
+const AntigravitKineticPoints = lazy(() => import("./components/AntigravitKineticPoints"));
+
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
@@ -235,7 +237,7 @@ export default function App() {
         <div className="max-w-[1400px] mx-auto flex flex-wrap justify-center md:justify-between items-center h-full gap-4">
             <span className="font-serif text-[#F5F1EB] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
              H A N L A N &nbsp; G R O U P
-           </span>
+            </span>
            
            <nav className="hidden md:flex items-center gap-10 pointer-events-auto">
              {[
@@ -329,7 +331,7 @@ export default function App() {
           >
             In an era of hyper-complexity, the ultimate authority is the refined intent. 
             We build for those who prioritise impact over noise, architecture over assembly, 
-            and Leadership over dependency.
+            and leadership over dependency.
           </motion.p>
         </div>
       </section>
@@ -373,7 +375,13 @@ export default function App() {
         </div>
       </section>
       <section id="proof" className="py-20 md:py-32 px-6 bg-[#050505] overflow-hidden relative">
-        <div className="max-w-7xl mx-auto">
+        <div className="absolute inset-0 z-0">
+          <Suspense fallback={null}>
+            <AntigravitKineticPoints />
+          </Suspense>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 items-center">
             <div className="lg:col-span-12 space-y-12">
               <div className="space-y-8">
@@ -421,10 +429,10 @@ export default function App() {
                 </motion.div>
               </div>
             </div>
-
-
           </div>
-          <TypewriterText />
+          <div className="mt-20">
+            <TypewriterText />
+          </div>
         </div>
       </section>
       <main className="flex-grow">
@@ -442,7 +450,7 @@ export default function App() {
               <div className="max-w-2xl mx-auto">
                 <p className="text-brand-muted text-base md:text-lg font-light leading-relaxed tracking-wide mb-10">
                   For partnerships, global institutional enquiries, or technical proof audits. 
-                  Our team responds to qualified queries within 24 standard business hours.
+                  Our team responds to qualified queries within 24 hours.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(true)}

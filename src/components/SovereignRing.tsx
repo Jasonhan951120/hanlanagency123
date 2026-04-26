@@ -34,19 +34,19 @@ export default function SovereignRing() {
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 0.8;
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.25, 0.8, 0.9);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.18, 0.8, 0.9);
     composer.addPass(bloomPass);
     
     const fxaaPass = new ShaderPass(FXAAShader);
     fxaaPass.uniforms["resolution"].value.set(1 / width, 1 / height);
     composer.addPass(fxaaPass);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
     dirLight.position.set(3, 4, 5);
     scene.add(dirLight);
 
@@ -97,10 +97,10 @@ export default function SovereignRing() {
           vec3 lightDir = normalize(vec3(3.0, 4.0, 5.0));
           vec3 halfVector = normalize(lightDir + viewDir);
           float NdotH = max(0.0, dot(normal, halfVector));
-          float specular = pow(NdotH, 150.0) * 1.5; 
+          float specular = pow(NdotH, 150.0) * 1.2; 
           float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
-          float edgeGlow = smoothstep(0.5, 1.0, fresnel) * 1.2;
-          vec3 emissive = pinkCol * 0.4;
+          float edgeGlow = smoothstep(0.5, 1.0, fresnel) * 1.0;
+          vec3 emissive = pinkCol * 0.3;
           vec3 col = pinkCol * wf;
           if (wf > 0.0) {
             col += emissive; col += vec3(1.0, 0.95, 0.98) * specular;
