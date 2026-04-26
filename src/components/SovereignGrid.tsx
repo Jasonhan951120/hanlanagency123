@@ -137,7 +137,7 @@ export default function SovereignGrid() {
       frames++;
       ctx.clearRect(0, 0, w, h);
       
-      ctx.fillStyle = "#050506";
+      ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, w, h);
 
       filaments.forEach(f => {

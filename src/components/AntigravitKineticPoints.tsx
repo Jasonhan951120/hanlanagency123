@@ -79,7 +79,7 @@ export default function AntigravitKineticPoints() {
 
     const animate = () => {
       time += 0.003; 
-      ctx.fillStyle = '#050505'; 
+      ctx.fillStyle = '#000000'; 
       ctx.fillRect(0, 0, width, height);
 
       const mouse = mouseRef.current;

@@ -152,18 +152,19 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
   const [isHeadingComplete, setIsHeadingComplete] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '' });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    if (activeModal) {
+    if (activeModal || isMenuOpen || isModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [activeModal]);
+  }, [activeModal, isMenuOpen, isModalOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,9 +232,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full max-w-[100vw] bg-[#F5F1EB]" style={{ willChange: "scroll-position" }}>
-       <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
-        <div className="max-w-[1400px] mx-auto flex flex-wrap justify-center md:justify-between items-center h-full gap-4">
-            <span className="font-serif text-[#F5F1EB] text-xl sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
+       <header className="absolute top-0 left-0 w-full p-6 md:p-8 z-[100] pointer-events-none">
+        <div className="max-w-[1400px] mx-auto flex justify-between items-center h-full gap-4">
+            <span className="font-serif text-[#F5F1EB] text-lg sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.4em] pointer-events-auto whitespace-nowrap">
              H A N L A N &nbsp; G R O U P
             </span>
            
@@ -254,7 +255,69 @@ export default function App() {
                </button>
              ))}
            </nav>
+
+           <button 
+             onClick={() => setIsMenuOpen(!isMenuOpen)}
+             className="md:hidden p-2 text-[#F5F1EB] pointer-events-auto active:opacity-70 z-[110]"
+             aria-label="Toggle menu"
+           >
+             <div className="w-6 h-5 flex flex-col justify-between items-end">
+               <motion.span 
+                 animate={isMenuOpen ? { rotate: 45, y: 8, width: "100%" } : { rotate: 0, y: 0, width: "100%" }}
+                 className="block h-[1.5px] bg-[#F5F1EB] origin-right transition-all"
+               />
+               <motion.span 
+                 animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                 className="block w-4 h-[1.5px] bg-[#F5F1EB] transition-all"
+               />
+               <motion.span 
+                 animate={isMenuOpen ? { rotate: -45, y: -8, width: "100%" } : { rotate: 0, y: 0, width: "100%" }}
+                 className="block h-[1.5px] bg-[#F5F1EB] origin-right transition-all"
+               />
+             </div>
+           </button>
         </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-0 bg-black z-[105] pointer-events-auto flex flex-col items-center justify-center gap-12"
+            >
+              {[
+                { name: "Ethos", id: "doctrine" },
+                { name: "Capabilities", id: "capabilities" },
+                { name: "Proof", id: "proof" },
+                { name: "Contact", id: "contact" }
+              ].map((link, i) => (
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.1 }}
+                  key={link.id}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="text-4xl font-serif text-[#F5F1EB] tracking-widest active:text-white/60"
+                >
+                  {link.name}
+                </motion.button>
+              ))}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="absolute bottom-12 flex flex-col items-center gap-4"
+              >
+                <span className="label-caps text-[10px] opacity-40">© 2026 HANLAN GROUP</span>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
        <section className="relative z-0 min-h-screen flex flex-col items-center justify-start px-6 text-center overflow-hidden bg-black pt-32 pb-20">
          <Suspense fallback={null}>
@@ -262,14 +325,14 @@ export default function App() {
          </Suspense>
          
          <div className="max-w-4xl w-full flex flex-col items-center relative z-10">
-          <div className="heading-serif text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
+          <div className="heading-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl mb-0 uppercase tracking-tight min-h-[1.3em] flex items-center justify-center text-[#F5F1EB] text-balance">
             <ZeroShiftPathfinder 
               text="Systemic Precision." 
               onComplete={() => setIsHeadingComplete(true)} 
             />
           </div>
 
-          <div className="w-[700px] max-w-[85%] h-[400px] md:h-[500px] mx-auto mt-6 mb-2 block">
+          <div className="w-[700px] max-w-[85%] h-[300px] sm:h-[400px] md:h-[500px] mx-auto mt-6 mb-2 block">
             <AnimatePresence>
               {isHeadingComplete && (
                 <motion.div
@@ -372,7 +435,7 @@ export default function App() {
           </div>
         </div>
       </section>
-      <section id="proof" className="py-20 md:py-32 px-6 bg-[#050505] overflow-hidden relative">
+      <section id="proof" className="py-20 md:py-32 px-6 bg-black overflow-hidden relative">
         <div className="absolute inset-0 z-0">
           <Suspense fallback={null}>
             <AntigravitKineticPoints />
@@ -387,7 +450,7 @@ export default function App() {
                   Technical Proof
                 </motion.span>
                 <motion.h2 
-                  className="heading-serif text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white"
+                  className="heading-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white"
                   {...fadeIn}
                 >
                   Engineering the <br className="hidden md:block" />
@@ -470,7 +533,7 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  className="bg-[#F5F1EB] max-w-[460px] w-full p-8 md:p-12 rounded-2xl shadow-2xl relative border border-black/5"
+                  className="bg-[#F5F1EB] max-w-[460px] w-full p-6 md:p-12 rounded-2xl shadow-2xl relative border border-black/5"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
@@ -597,7 +660,7 @@ export default function App() {
         </div>
       </section>
 
-      <footer className="py-20 px-6 bg-[#050505] border-t border-white/5 flex flex-col items-center">
+      <footer className="py-20 px-6 bg-black border-t border-white/5 flex flex-col items-center">
         <div className="max-w-7xl mx-auto w-full">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start w-full">
             <div className="space-y-4">
