@@ -20,6 +20,8 @@
 | `src/main.tsx` | Logic | Protected |
 | `src/App.tsx` | Main | Protected |
 | `src/components/SovereignRing.tsx` | Component | Protected |
+| `src/components/SovereignGrid.tsx` | Component | Protected |
+| `src/components/AntigravitKineticPoints.tsx` | Component | Protected |
 | `api/send.ts` | API | Protected |
 
 ---

@@ -155,7 +155,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '' });
+  const [formValues, setFormValues] = useState({ name: '', email: '', company: '', reason: '', _honey: '' });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -198,7 +198,8 @@ export default function App() {
           name: formValues.name,
           email: formValues.email,
           company: formValues.company,
-          reason: formValues.reason
+          reason: formValues.reason,
+          _honey: formValues._honey
         }),
       });
 
@@ -211,7 +212,7 @@ export default function App() {
       setTimeout(() => {
         setIsModalOpen(false);
         setFormState('idle');
-        setFormValues({ name: '', email: '', company: '', reason: '' });
+        setFormValues({ name: '', email: '', company: '', reason: '', _honey: '' });
       }, 2000);
     } catch (error) {
       console.error('Submission Error:', error);
@@ -590,6 +591,19 @@ export default function App() {
                     </motion.div>
                   ) : (
                     <form className="space-y-3" onSubmit={handleSubmit}>
+                      {/* Honeypot field - Bots will fill this out, humans won't see it */}
+                      <div className="hidden" aria-hidden="true">
+                        <label>Leave this field empty</label>
+                        <input
+                          type="text"
+                          name="_honey"
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={formValues._honey}
+                          onChange={(e) => setFormValues({...formValues, _honey: e.target.value})}
+                        />
+                      </div>
+
                       <div className="space-y-1">
                         <label className="block text-[8px] font-black uppercase tracking-widest text-black/30 pl-1">Name</label>
                         <input 
